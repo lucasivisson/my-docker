@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+  app:
+    build:
+      context: ./node
+    image: lucasivisson/node
+    entrypoint: dockerize -wait tcp://db:3306 -timeout 20s docker-entrypoint.sh
+    # substituimos o entrypoint padrão da imagem do node.js para utilizar o dockerize para mandar esperar por 20 segundos para ter conexão com o banco de dados na porta 3306 e só depois disso rodar o docker-entrypoint.sh padrão da imagem do node.js
+    container_name: app
+    networks:
+      - node-network
+    volumes: 
+      - ./node:/usr/src/app
+    tty: true
+    ports:
+      - "3000:3000"
+    depends_on: # cria uma dependencia entre os containers, fazendo com que ele suba primeiro o container db e depois o container app, mas isso não significa que o container app vai esperar o container db ficar pronto.
+      - db
+
+  db:
+    image: mysql:5.7
+    command: --innodb-use-native-aio=0 # comando que devemos rodar quando o mysql é instalado no container, ele é executado dps do nosso entrypoint padrão
+    container_name: db # nome do container
+    restart: always # Vai reestartar sempre que o container cair
+    tty: true # equivalente ao -it
+    volumes: 
+      - ./mysql:/var/lib/mysql
+    environment: # seta as variaveis de ambiente
+      - MYSQL_DATABASE=nodedb
+      - MYSQL_ROOT_PASSWORD=root
+    networks: # seta a network do composer
+      - node-network
+
+networks:
+  node-network:
+    driver: bridge
+    

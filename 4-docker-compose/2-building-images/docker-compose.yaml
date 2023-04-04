@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  laravel:
+    build: 
+      context: ../../2-framework-container/laravel # caminho da pasta
+      dockerfile: Dockerfile # nome do Dockerfile
+    image: lucasivisson/laravel # colocamos a image também pra imagem ser gerada com esse nome que colocamos.
+    container_name: laravel
+    networks:
+      - laranet
+
+  nginx:
+    build: 
+      context: ../../1-first-images/nginx-to-publish
+      dockerfile: Dockerfile
+    image: lucasivisson/nginx-fullcycle
+    container_name: nginx
+    networks:
+      - laranet
+    ports:
+      - "8080:80"
+
+networks:
+  laranet:
+    driver: bridge
+    
