@@ -9,6 +9,8 @@ COPY code .
 
 ### CGO has to be disabled cross platform builds
 ### Otherwise the application won't be able to start
+### With CGO_ENABLED=0 you got a staticaly-linked binary
+### A static build is a compiled version of a program which has been statically linked against libraries.
 ENV CGO_ENABLED=0
 
 ### Build the Go app for a linux OS
