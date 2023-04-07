@@ -1,12 +1,20 @@
-FROM golang:latest
+FROM golang:1.15 as builder
 
 WORKDIR /src/
 
-COPY code /src/
+COPY code .
 
-RUN go build hello.go
+ENV CGO_ENABLED=0
 
-ENTRYPOINT [ "./hello" ]
+RUN GOOS=linux go build hello.go
+
+# ENTRYPOINT [ "./hello" ]
 
 
+FROM scratch
 
+WORKDIR /src/
+
+COPY --from=builder /src .
+
+CMD ["./hello"]
