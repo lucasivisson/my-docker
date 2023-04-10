@@ -6,14 +6,31 @@ services:
       context: node
     volumes:
       - ./node/:/usr/src/app
-    container_name: lucasivisson/nodejs-proxy-reverse
+    container_name: app
+    entrypoint: dockerize -wait tcp://db:3306 -timeout 20s docker-entrypoint.sh
     tty: true
     ports:
       - 3000:3000
+    networks:
+      - app-proxy-reverse
+    depends_on:
+      - db
 
-    db:
-      build:
-        context: mysql
-      tty: true
-      restart: always
+  db:
+    networks:
+      - app-proxy-reverse
+    image: mysql:latest
+    container_name: db
+    command: --innodb-use-native-aio=0
+    volumes:
+    - ./mysql/:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=app-proxy-reverse
+      - MYSQL_ROOT_PASSWORD=root
+    tty: true
+    restart: always
+
+networks:
+  app-proxy-reverse:
+    driver: bridge
     
