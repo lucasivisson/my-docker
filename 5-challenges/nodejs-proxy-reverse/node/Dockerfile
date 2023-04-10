@@ -13,5 +13,5 @@ RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSI
 
 EXPOSE 3000
 
-ENTRYPOINT [ "node", "index.js" ]
+# CMD [ "node", "index.js" ]
 
