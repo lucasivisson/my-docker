@@ -19,7 +19,7 @@ services:
   db:
     networks:
       - app-proxy-reverse
-    image: mysql:latest
+    image: mysql:5.7
     container_name: db
     command: --innodb-use-native-aio=0
     volumes:
@@ -28,6 +28,8 @@ services:
       - MYSQL_DATABASE=app-proxy-reverse
       - MYSQL_ROOT_PASSWORD=root
     tty: true
+    ports:
+      - 3306:3306
     restart: always
 
   nginx:
@@ -35,7 +37,6 @@ services:
     restart: always
     build: 
       context: nginx
-    # entrypoint: dockerize -wait tcp://app:3000 -timeout 20s docker-entrypoint.sh
     ports:
       - 8080:80
     depends_on:
